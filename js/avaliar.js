@@ -24,3 +24,8 @@
     location.href = 'concluida.html';
   });
 })();
+const params = new URLSearchParams(
+  window.location.search
+);
+
+const codigo = params.get("codigo");
