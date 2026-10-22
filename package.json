@@ -1,0 +1,24 @@
+{
+  "name": "teste_original",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maikonchagas-coder/teste_original.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/maikonchagas-coder/teste_original/issues"
+  },
+  "homepage": "https://github.com/maikonchagas-coder/teste_original#readme",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.2.0"
+  }
+}
