@@ -29,3 +29,20 @@ const params = new URLSearchParams(
 );
 
 const codigo = params.get("codigo");
+const parametros = new URLSearchParams(
+  window.location.search
+);
+
+const modoTeste = parametros.get("teste") === "1";
+
+if (modoTeste) {
+  const projeto = {
+    codigo_qr: "PROJETO_001",
+    nome: "Braço Robótico",
+    area: "Automação",
+    descricao: "Projeto de demonstração"
+  };
+
+  // Use os dados fictícios para preencher
+  // os elementos da página de avaliação.
+}
