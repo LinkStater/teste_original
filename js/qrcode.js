@@ -39,7 +39,7 @@
 
     if (!projeto) {
       mensagem(
-        "Projeto não encontrado na lista de teste. Confira o código.",
+        "Projeto não encontrado na lista. Confira o código.",
         "error"
       );
       return;
