@@ -7,7 +7,7 @@
 
   // Projetos fictícios para testar, sem banco de dados.
   const projetos = [
-    { codigo: "PROJETO_001", nome: "Braço Robótico" },
+    { codigo: "PROJETO_001", nome: "Ranfy" },
     { codigo: "PROJETO_002", nome: "Casa Inteligente" },
     { codigo: "PROJETO_003", nome: "Energia Sustentável" }
   ];
