@@ -38,11 +38,7 @@ const modoTeste = parametros.get("teste") === "1";
 if (modoTeste) {
   const projeto = {
     codigo_qr: "PROJETO_001",
-    nome: "Braço Robótico",
-    area: "Automação",
-    descricao: "Projeto de demonstração"
+    nome: "Ranfy",
+    area: "Desenvolvimento de sistema"
   };
-
-  // Use os dados fictícios para preencher
-  // os elementos da página de avaliação.
 }
