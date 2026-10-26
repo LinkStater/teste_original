@@ -1,56 +1,119 @@
+
 (() => {
-  const params = new URLSearchParams(location.search);
-  const code = params.get('projeto');
-  const projects = window.RANFY_PROJECTS || {};
-  const project = code && Object.prototype.hasOwnProperty.call(projects, code) ? projects[code] : null;
-  if (!project) {
-    alert('Este projeto não está cadastrado no Ranfy.');
-    location.replace('qrcode.html');
-    return;
-  }
-  document.getElementById('project-name').textContent = project.name;
-  document.getElementById('project-code-label').textContent = `${project.stand} · Código: ${code} · ${project.area}`;
-  const form = document.getElementById('evaluation-form');
-  form.addEventListener('submit', async event => {
-    event.preventDefault();
-    if (!form.reportValidity()) return;
-    const button = form.querySelector('[type="submit"]');
-    const oldText = button.textContent;
-    button.disabled = true; button.textContent = 'Enviando...';
+  const form = document.getElementById("evaluation-form");
+
+  if (!form) return;
+
+  async function iniciarAvaliacao() {
+    const params = new URLSearchParams(location.search);
+    const codigo = (params.get("projeto") || "").trim();
+
+    if (!codigo) {
+      alert("Código do projeto não informado.");
+      location.replace("qrcode.html");
+      return;
+    }
+
     try {
-      const participante = (localStorage.getItem('ranfy_nome') || '').trim();
-      if (!participante) throw new Error('Nome do avaliador não encontrado. Volte e informe seu nome.');
-      const payload = {
-        projeto_codigo: code, projeto_nome: project.name, participante,
-        avaliacao_geral: Number(form.querySelector('input[name="avaliacao_geral"]:checked').value),
-        criatividade: Number(form.querySelector('input[name="criatividade"]:checked').value),
-        impacto: Number(form.querySelector('input[name="impacto"]:checked').value),
-        comentario: form.elements.comentario.value.trim()
-      };
-      const response = await fetch(window.RANFY_API_BASE.replace(/\/$/, '') + '/api/avaliacoes', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+      const api = window.RANFY_API_URL;
+      const resposta = await fetch(
+        `${api}/api/projetos/${encodeURIComponent(codigo)}`
+      );
+
+      if (resposta.status === 404) {
+        alert("Este projeto não está cadastrado no Ranfy.");
+        location.replace("qrcode.html");
+        return;
+      }
+
+      if (!resposta.ok) {
+        throw new Error("Falha ao consultar o projeto.");
+      }
+
+      const projeto = await resposta.json();
+
+      document.getElementById("project-name").textContent = projeto.nome;
+      document.getElementById("project-code-label").textContent =
+        `${projeto.area} · Código: ${projeto.codigo}`;
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!form.reportValidity()) return;
+
+        const botao = form.querySelector('[type="submit"]');
+
+        if (botao) botao.disabled = true;
+
+        try {
+          const participante = (
+            localStorage.getItem("ranfy_nome") || ""
+          ).trim();
+
+          if (!participante) {
+            alert("Informe seu nome antes de avaliar.");
+            if (botao) botao.disabled = false;
+            return;
+          }
+
+          const nota1 = form.querySelector(
+            'input[name="avaliacao_geral"]:checked'
+          )?.value;
+
+          const nota2 = form.querySelector(
+            'input[name="criatividade"]:checked'
+          )?.value;
+
+          const nota3 = form.querySelector(
+            'input[name="impacto"]:checked'
+          )?.value;
+
+          const comentario = form.elements.comentario?.value.trim() || "";
+
+          const envio = await fetch(`${api}/api/avaliacoes`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              projetoCodigo: projeto.codigo,
+              participante,
+              nota1: Number(nota1),
+              nota2: Number(nota2),
+              nota3: Number(nota3),
+              comentario
+            })
+          });
+
+          const resultado = await envio.json();
+
+          if (envio.status === 409) {
+            alert(resultado.erro || "Você já avaliou este projeto.");
+            if (botao) botao.disabled = false;
+            return;
+          }
+
+          if (!envio.ok) {
+            throw new Error(resultado.erro || "Erro ao enviar avaliação.");
+          }
+
+          // Só avança depois de confirmar que o backend salvou.
+          location.href = "concluida.html";
+        } catch (erro) {
+          console.error(erro);
+          alert(
+            erro.message ||
+            "Não foi possível enviar. Verifique sua conexão e tente novamente."
+          );
+
+          if (botao) botao.disabled = false;
+        }
       });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error || 'Não foi possível salvar a avaliação.');
-      location.href = 'concluida.html';
-    } catch (e) { alert(e.message); button.disabled = false; button.textContent = oldText; }
-  });
+    } catch (erro) {
+      console.error(erro);
+      alert("Não foi possível carregar o projeto. Tente novamente.");
+    }
+  }
+
+  iniciarAvaliacao();
 })();
-const params = new URLSearchParams(
-  window.location.search
-);
-
-const codigo = params.get("codigo");
-const parametros = new URLSearchParams(
-  window.location.search
-);
-
-const modoTeste = parametros.get("teste") === "1";
-
-if (modoTeste) {
-  const projeto = {
-    codigo_qr: "PROJETO_001",
-    nome: "Ranfy",
-    area: "Desenvolvimento de sistema"
-  };
-}

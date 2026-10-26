@@ -1,7 +1,33 @@
-window.RANFY_PROJECTS = {
-  "PROJETO_001": {
-    name: "Ranfy",
-    stand: "Estande 01",
-    area: "Desenvolvimento de Sistemas"
-  }
-}
+
+(() => {
+  const api = window.RANFY_API_URL;
+
+  window.RANFY_PROJECTS = {};
+
+  window.RANFY_PROJECTS_READY = (async () => {
+    if (!api) {
+      throw new Error("A URL da API do Ranfy não foi configurada.");
+    }
+
+    const resposta = await fetch(`${api}/api/projetos`);
+
+    if (!resposta.ok) {
+      throw new Error("Não foi possível buscar os projetos no Neon.");
+    }
+
+    const lista = await resposta.json();
+    const projetos = {};
+
+    for (const p of lista) {
+      projetos[p.codigo] = {
+        code: p.codigo,
+        name: p.nome,
+        area: p.area,
+        stand: ""
+      };
+    }
+
+    window.RANFY_PROJECTS = projetos;
+    return projetos;
+  })();
+})();
