@@ -11,17 +11,29 @@
   document.getElementById('project-name').textContent = project.name;
   document.getElementById('project-code-label').textContent = `${project.stand} · Código: ${code} · ${project.area}`;
   const form = document.getElementById('evaluation-form');
-  form.addEventListener('submit', event => {
+  form.addEventListener('submit', async event => {
     event.preventDefault();
     if (!form.reportValidity()) return;
-    const ratings = {};
-    ['avaliacao_geral', 'criatividade', 'impacto'].forEach(key => { ratings[key] = Number(form.querySelector(`input[name="${key}"]:checked`).value); });
-    const evaluation = { projectCode: code, projectName: project.name, participant: localStorage.getItem('ranfy_nome') || '', ratings, comment: form.elements.comentario.value.trim(), completedAt: new Date().toISOString() };
-    const key = 'ranfy_avaliacoes';
-    const all = JSON.parse(localStorage.getItem(key) || '[]');
-    all.push(evaluation);
-    localStorage.setItem(key, JSON.stringify(all));
-    location.href = 'concluida.html';
+    const button = form.querySelector('[type="submit"]');
+    const oldText = button.textContent;
+    button.disabled = true; button.textContent = 'Enviando...';
+    try {
+      const participante = (localStorage.getItem('ranfy_nome') || '').trim();
+      if (!participante) throw new Error('Nome do avaliador não encontrado. Volte e informe seu nome.');
+      const payload = {
+        projeto_codigo: code, projeto_nome: project.name, participante,
+        avaliacao_geral: Number(form.querySelector('input[name="avaliacao_geral"]:checked').value),
+        criatividade: Number(form.querySelector('input[name="criatividade"]:checked').value),
+        impacto: Number(form.querySelector('input[name="impacto"]:checked').value),
+        comentario: form.elements.comentario.value.trim()
+      };
+      const response = await fetch(window.RANFY_API_BASE.replace(/\/$/, '') + '/api/avaliacoes', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Não foi possível salvar a avaliação.');
+      location.href = 'concluida.html';
+    } catch (e) { alert(e.message); button.disabled = false; button.textContent = oldText; }
   });
 })();
 const params = new URLSearchParams(
