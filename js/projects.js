@@ -19,8 +19,12 @@
     const projetos = {};
 
     for (const p of lista) {
-      projetos[p.codigo] = {
-        code: p.codigo,
+      const codigo = p.codigo_qr || p.codigo;
+
+      if (!codigo) continue;
+
+      projetos[codigo.trim().toUpperCase()] = {
+        code: codigo.trim().toUpperCase(),
         name: p.nome,
         area: p.area,
         stand: ""
