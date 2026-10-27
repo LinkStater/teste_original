@@ -1,8 +1,10 @@
 import { neon } from "@neondatabase/serverless";
 
 export default async (request) => {
-  const codigo = new URL(request.url)
-    .searchParams.get("codigo");
+  const url = new URL(request.url);
+  const codigo =
+    url.searchParams.get("codigo") ||
+    url.searchParams.get("projeto");
 
   if (!codigo) {
     return Response.json(
