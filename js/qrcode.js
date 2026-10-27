@@ -36,23 +36,47 @@
     }
   }
 
+
   async function validarCodigo(texto, origem = "camera") {
     if (processando) return;
-
-    const codigo = extrairCodigo(texto);
-
-    if (!codigo) {
-      mensagemManual("Digite o código do projeto.", "error");
-      return;
-    }
-
-    processando = true;
 
     const informar = origem === "manual"
       ? mensagemManual
       : mensagem;
 
-    informar("Consultando projeto no banco de dados...");
+    let codigo = String(texto || "").trim();
+
+    // Aceita QR Codes que contenham uma URL.
+    try {
+      const url = new URL(codigo);
+      codigo =
+        url.searchParams.get("projeto") ||
+        url.searchParams.get("codigo") ||
+        url.searchParams.get("code") ||
+        codigo;
+    } catch {
+      // O conteúdo não é uma URL; pode ser o código diretamente.
+    }
+
+    // Padroniza o código para consultar a API.
+    codigo = codigo.trim().toUpperCase();
+
+    // Se extrairCodigo já identifica códigos em outros formatos,
+    // aproveita o resultado quando estiver disponível.
+    if (typeof extrairCodigo === "function") {
+      const extraido = extrairCodigo(texto);
+      if (extraido) {
+        codigo = String(extraido).trim().toUpperCase();
+      }
+    }
+
+    if (!codigo) {
+      informar("Não foi possível identificar o código do projeto.", "error");
+      return;
+    }
+
+    processando = true;
+    informar(`Consultando o código: ${codigo}...`);
 
     try {
       const api = window.RANFY_API_URL;
@@ -65,12 +89,13 @@
         `${api}/api/projetos/${encodeURIComponent(codigo)}`
       );
 
+      const dados = await resposta.json().catch(() => ({}));
+
       if (resposta.status === 404) {
         informar(
-          "Projeto não encontrado. Confira o QR Code ou o código digitado.",
+          `O código "${codigo}" não foi encontrado. Confira o conteúdo do QR Code.`,
           "error"
         );
-        processando = false;
         return;
       }
 
@@ -78,13 +103,20 @@
         throw new Error(`A API respondeu com erro ${resposta.status}.`);
       }
 
-      const projeto = await resposta.json();
+      const projeto = dados.projeto || dados;
 
-      if (!projeto.codigo || !projeto.nome) {
+      const codigoProjeto = String(
+        projeto.codigo_qr || projeto.codigo || ""
+      ).trim().toUpperCase();
+
+      if (!codigoProjeto || !projeto.nome) {
         throw new Error("A API retornou dados incompletos do projeto.");
       }
 
-      informar(`Projeto encontrado: ${projeto.nome}. Abrindo avaliação...`, "success");
+      informar(
+        `Projeto encontrado: ${projeto.nome}. Abrindo avaliação...`,
+        "success"
+      );
 
       if (scanner && scanner.isScanning) {
         try {
@@ -95,19 +127,19 @@
       }
 
       window.location.href =
-  `avaliar.html?projeto=${encodeURIComponent(projeto.codigo)}`;
+        `avaliar.html?projeto=${encodeURIComponent(codigoProjeto)}`;
 
     } catch (erro) {
-      console.error("Erro ao validar projeto:", erro);
-
+      console.error("Erro ao validar QR Code:", erro);
       informar(
-        "Não foi possível consultar os projetos. Verifique a conexão e tente novamente.",
+        "Não foi possível consultar o projeto. Verifique a conexão e tente novamente.",
         "error"
       );
-
+    } finally {
       processando = false;
     }
   }
+
 
   async function iniciarCamera() {
     if (!window.Html5Qrcode) {
