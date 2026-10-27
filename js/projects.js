@@ -12,19 +12,21 @@
     const resposta = await fetch(`${api}/api/projetos`);
 
     if (!resposta.ok) {
-      throw new Error("Não foi possível buscar os projetos no Neon.");
+      throw new Error("Não foi possível buscar os projetos na API.");
     }
 
     const lista = await resposta.json();
     const projetos = {};
 
     for (const p of lista) {
-      const codigo = p.codigo_qr || p.codigo;
+      const codigo = (p.codigo_qr || p.codigo || "")
+        .trim()
+        .toUpperCase();
 
       if (!codigo) continue;
 
-      projetos[codigo.trim().toUpperCase()] = {
-        code: codigo.trim().toUpperCase(),
+      projetos[codigo] = {
+        code: codigo,
         name: p.nome,
         area: p.area,
         stand: ""

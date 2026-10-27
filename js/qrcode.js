@@ -95,7 +95,7 @@
       }
 
       window.location.href =
-        `avaliar.html?projeto=${encodeURIComponent(projeto.codigo)}`;
+  `avaliar.html?projeto=${encodeURIComponent(projeto.codigo)}`;
 
     } catch (erro) {
       console.error("Erro ao validar projeto:", erro);
@@ -141,7 +141,7 @@
         camera.id,
         { fps: 10, qrbox: { width: 240, height: 240 } },
         texto => validarCodigo(texto, "camera"),
-        () => {}
+        () => { }
       );
 
       mensagem("Câmera ativa. Aponte para o QR Code.");
