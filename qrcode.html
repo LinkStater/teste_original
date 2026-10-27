@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,12 @@
   <title>Ranfy — Escaneie o projeto</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="page">
   <div class="app-shell">
     <header class="app-header">
-      <a class="brand brand-image" href="index.html" aria-label="Ranfy, início"><img src="assets/ranfy-logo.png" alt="Ranfy — Mundo SENAI"></a>
+      <a class="brand brand-image" href="index.html" aria-label="Ranfy, início"><img src="assets/ranfy-logo.png"
+          alt="Ranfy — Mundo SENAI"></a>
       <span class="event-label">MUNDO SENAI <span class="tiny-pixel" aria-hidden="true"></span></span>
     </header>
 
@@ -28,8 +31,10 @@
           <span class="scanner-label">APONTE PARA O QR CODE</span>
         </div>
 
-        <p id="scanner-status" class="scanner-hint" role="status"><span class="status-dot"></span> Toque em “Ativar câmera” para começar a leitura.</p>
-        <button class="button button-primary camera-button" id="start-camera" type="button">Ativar câmera <span aria-hidden="true">▣</span></button>
+        <p id="scanner-status" class="scanner-hint" role="status"><span class="status-dot"></span> Toque em “Ativar
+          câmera” para começar a leitura.</p>
+        <button class="button button-primary camera-button" id="start-camera" type="button">Ativar câmera <span
+            aria-hidden="true">▣</span></button>
 
         <form id="manual-project-form" class="manual-form">
           <label for="project-code">Ou digite o código do projeto</label>
@@ -41,13 +46,16 @@
         </form>
       </section>
     </main>
-    <footer class="app-footer"><span>APONTE. DESCUBRA. AVALIE.</span><span class="footer-line"></span><span class="footer-index">02 <span>/</span> 04</span></footer>
+    <footer class="app-footer"><span>APONTE. DESCUBRA. AVALIE.</span><span class="footer-line"></span><span
+        class="footer-index">02 <span>/</span> 04</span></footer>
   </div>
 
   <!-- Leitor real da câmera do celular. Requer HTTPS/localhost e internet para carregar a biblioteca. -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/projects.js"></script>
   <script src="js/qrcode.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>
