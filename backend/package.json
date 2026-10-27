@@ -1,15 +1,10 @@
 {
-  "name": "ranfy-backend",
+  "name": "ranfy-api",
   "version": "1.0.0",
   "private": true,
-  "description": "API do Ranfy integrada ao Neon",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
-  },
-  "engines": {
-    "node": ">=20"
+    "start": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
