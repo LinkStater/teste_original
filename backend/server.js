@@ -32,10 +32,9 @@ app.use(express.json({ limit: "20kb" }));
 app.get("/api/health", async (req, res) => {
   try {
     await pool.query("SELECT 1");
-    res.json({ ok: true, banco: "conectado" });
+    res.json({ ok: true, database: "connected" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ ok: false, erro: "Falha ao conectar ao banco." });
+    res.status(500).json({ ok: false, database: "error" });
   }
 });
 
